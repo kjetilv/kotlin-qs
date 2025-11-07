@@ -10,10 +10,9 @@ konstruksjoner som grensesnitt (`interface`). Det er antagelig mange måter å g
 intervjusituasjon går IQ-en ned 5-15 poeng.  (Vitenskapelig bevist!  Det står i alle fall skrevet.)
 
 Det er altså ikke realistisk at alle skal komme seg gjennom hele øvelsen, derfor bør vi ikke legge ut hele løypa og si "
-kjør", men heller introdusere stegene etterhvert som kandiaten løser dem. Når tiden er ute, er den ute.
-
-Det er kjedelig om noen føler at de har kommet til kort, dessuten bør vi innhente flere erfaringer om
-forventningsnivået som er realistisk, gitt tiden.
+kjør", men heller introdusere stegene etterhvert som kandiaten løser dem. Når tiden er ute, er den ute, og ingen trenger
+ikke si noe om hvor langt man kom. Det er kjedelig om noen føler at de har kommet til kort, dessuten bør vi innhente
+flere erfaringer om forventningsnivået som er realistisk på tilmålt tid.
 
 Kommentarer til øvelsene:
 
@@ -46,6 +45,12 @@ som å skrive en `fun`.
 Det er nå fire verdier som skal lages. En enkel løsning er å traversere listen fire ganger på forskjellige måter. Det er
 greit for denne runden.
 
+Hvis man vil nerde litt rundt Kotlin, så kan man diskutere hvordan man kan returnere en `Stats` som beregner svarene
+sine på forespørsel, f.eks.:
+
+* on-demand/hver gang man spør (`override val min get() = list.min()`)
+* lazy/kun første gang man spør (`override val min: Int by lazy { list.min() }`)
+
 ## Find stats with provider
 
 Det er ca. her det begynner å bli interessant.
@@ -65,8 +70,10 @@ Noen poenger til diskusjon/hinting:
 
 I tillegg skjer det noen type-endringer, da summen blir til `BigInteger` i stedet for `Long`.
 Dette krever noen typekonverteringer, noe Kotlin har god støtte for om man leter seg litt frem i standardbiblioteket.
-Hvis kandidaten blir unødig opphengt i disse detaljene, er det nok best å hjelpe vedkommende over kneika med disse, da
-det ikke er det mest interessante med oppgaven.  (Men pluss om dette går greit.)
+Dette er en liten test av hvor komfortabel man er med å finne frem i tredjepartsbiblioteker. Hvis kandidaten blir unødig
+opphengt i disse detaljene, er det nok best å hjelpe vedkommende over kneika med disse, da
+det ikke er det mest interessante med oppgaven. Pluss for å kjenne detaljene, enda større pluss om man ukjent med dem
+men finner ut av det.
 
 ### Hjelpefunksjonen for testing
 
@@ -74,14 +81,14 @@ Som en liten oppvarming til dette må vi ha en hjelpefunksjon som kan konvertere
 `() -> Int?`.
 
 Dette kan løses på mange måter, men krever kjennskap til høyereordens funskjoner: Vår
-hjelpefunksjon må returnere en _ny_ funksjon, som så skal sendes til `stats`.
+hjelpefunksjon må returnere en _ny_ funksjon. Denne skal sendes til `stats` for å representere listen av tall.
 
-Hvis tiden løper ut, eller kandidaten sliter og ikke er høyereordens-funksjoner-typen, kan det være greit å bare
-gi en definisjon av funksjonen og hoppe til neste del, som også har en imperativ side.
+Hvis tiden løper ut, eller kandidaten sliter og ikke er plagsomt god på høyereordens funksjoner, kan det være greit å
+bare gi en definisjon av funksjonen og hoppe til neste del, da den også har en imperativ løsning.
 
 ### Strategier for å bygge opp svaret:
 
-Det er flere måter å bygge opp svaret, de to viktigste er nok:
+Det er flere måter å bygge opp svaret, de to viktigste er:
 
 #### Imperativ stil
 
@@ -92,7 +99,7 @@ Deklarer fire temporære variabler som oppdateres for hvert tall:
 3. Sum så langt
 4. Antall så langt
 
-Da kan man til slutt regne ut snittet og returnere verdiene. Dette fungerer.
+Da kan man til slutt regne ut snittet og returnere verdiene. Dette fungerer bra i imperativ stil.
 
 Diskusjonspunkter:
 
@@ -115,22 +122,28 @@ Diskusjonspunkter:
 
 ### Strategier for å iterere
 
-På ett eller annet vis må vi kalle funksjonen til den begynner å returnere `null`, deretter returnere oppbygd tilstand.
+På ett eller annet vis må vi kalle funksjonen til den begynner å returnere `null`. For hvert kall må vi bygge opp en
+tilstand, og deretter returnere den.
 
-Også her er imperativ stil en mulighet. En `while`-løkke kaller funksjonen frem til den svarer `null` fungerer fint,
-uansett hvordan man velger å bygge opp svaret.
+Også her er imperativ stil en mulighet. En `while`-løkke kaller funksjonen frem til den svarer `null`. Dette fungerer
+fint, uansett hvordan man velger å bygge opp svaret.
 
-Men funksjonell stil er det vi prøver å hinte til her, for de som kjenner Kotlin godt. Om man ser på typesignaturen
-`() -> Int?`, så finnes det nemlig en `generateSequence`-funksjon i standardbiblioteket, Den tar nettopp funksjoner på
-formen `() -> T?` og returnerer en `Sequence<T>`.
+Men funksjonell stil er det vi prøver å hinte til her!  For de som kjenner Kotlin godt, er det et hint i typesignaturen
+`() -> Int?`. Det finnesdet nemlig en `generateSequence`-funksjon i standardbiblioteket, som tar nettopp funksjoner på
+denne formen og returnerer en `Sequence<T>`.
 
-Sekvenser i Kotlin tilsvarer streams i Java, men mange tenker ikke over å bruke dem, siden `List` &co. har sine
-`filter`/`map`-metoder osv.
+Sekvenser i Kotlin tilsvarer streams i Java, men mange tenker ikke over å bruke dem, siden kolleksjoner i Kotlin har
+sine `filter`/`map`-metoder osv. Det kan være interessant å diskutere denne forskjellen med kandidaten; å kalle
+`filter` på en Kotlin-`List` produserer en ny liste der og da, og prosesserer alle elementene. Men `filter` på en
+`Sequence` gir en ny sekvens, der ingenting evalueres før man kaller en _terminerende_ funksjon på sekvensen.
 
-Med en slik sekvens på plass kan man enkelt `fold`-e seg gjennom strømmen.
+Uansett: Med en slik sekvens på plass kan man enkelt `fold`-e seg gjennom strømmen. (Som er en terminerende funksjon.)
 
 ## Provide a hook
 
 Dette er en generalisering av `stats`, kalt `process`. Det handler i det store og hele om å abstrahere
-tilstandsoppbyningen og skille traverseringen ut fra denne. Med de byggeklossene vi har på plass allerede, og en kandiat
-som har kommet seg helt hit, burde dette ikke være noe problem.
+tilstandsoppbyningen og skille traverseringen ut fra denne.
+
+Med de byggeklossene vi har på plass allerede, og en kandiat som har kommet seg helt hit, burde dette ikke være noe
+problem. I så fall På en annen side, å komme seg helt hit kan ha vært mentalt utmattende, og IQ-en er gått ned enda noen
+poeng. 

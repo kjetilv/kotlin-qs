@@ -55,9 +55,9 @@ sine på forespørsel, f.eks.:
 
 Det er ca. her det begynner å bli interessant.
 
-Her snur vi ting litt på hodet, og tilbyr vår funkjson `stats` en _annen_ funksjon i stedet for en liste. Denne
-funksjonen vil returnere ett og ett tall fra en serie, og avslutte med `null`. Påskuddet er at vi ikke kan holde hele
-listen i minnet på én gang.
+Her snur vi ting litt på hodet, og tilbyr vår funksjon `stats` en _annen_ funksjon i stedet for en liste. Denne
+funksjonen vil returnere ett og ett tall fra en serie, og avslutte med `null`. Påskuddet er at vi ikke lenger kan holde
+hele listen i minnet på én gang.
 
 Den store konsekvensen av denne endringen er at vi ikke lenger kan naivt traversere listen flere ganger. I stedet må vi
 bygge opp alle svarene i løpet av ett sveip.
@@ -70,10 +70,11 @@ Noen poenger til diskusjon/hinting:
 
 I tillegg skjer det noen type-endringer, da summen blir til `BigInteger` i stedet for `Long`.
 Dette krever noen typekonverteringer, noe Kotlin har god støtte for om man leter seg litt frem i standardbiblioteket.
-Dette er en liten test av hvor komfortabel man er med å finne frem i tredjepartsbiblioteker. Hvis kandidaten blir unødig
-opphengt i disse detaljene, er det nok best å hjelpe vedkommende over kneika med disse, da
-det ikke er det mest interessante med oppgaven. Pluss for å kjenne detaljene, enda større pluss om man ukjent med dem
-men finner ut av det.
+
+Dette er en mulig snublestein, men det kan fungere som en liten test av hvor komfortabel man er med å finne frem i
+tredjepartsbiblioteker. Hvis kandidaten blir unødig opphengt i disse detaljene, er det nok best å hjelpe vedkommende
+over kneika med disse, da det ikke er det mest interessante med oppgaven. Pluss for å kjenne detaljene, større
+pluss for å finne ut av det selv.
 
 ### Hjelpefunksjonen for testing
 
@@ -103,8 +104,9 @@ Da kan man til slutt regne ut snittet og returnere verdiene. Dette fungerer bra 
 
 Diskusjonspunkter:
 
-* Om man har en sterk kandidat bør man spørre hvordan det kan gjøres funksjonelt.  ("Hvis du ikke fikk lov å bruke en
+* Om man har en sterk kandidat kan man spørre hvordan det kan gjøres funksjonelt.  ("Hvis du ikke fikk lov å bruke en
   løkke ...")
+* `fold` er en naturlig funksjon (ekv. med `reduce` i Java), hint gjerne om denne
 
 #### Funksjonell (objektorientert?) stil
 
